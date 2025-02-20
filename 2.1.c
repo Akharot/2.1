@@ -30,20 +30,6 @@ double divided_differences(double list_x[], double list_y[], double dd[][N + 1])
     return dd[0][N];
 }
 
-void print_divided_differences(double dd[][N + 1])
-{
-    printf("\nDivided_differences:\n");
-
-    for (int i = 0; i <= N; i++)
-    {
-        for (int j = 0; j <= N - i; j++)
-        {
-            printf(" %10.5lf |", dd[i][j]);
-        }
-        printf("\n");
-    }
-}
-
 double newton_backward_polynomial(double x, double list_x[], double dd[N + 1][N + 1])
 {
     double result = dd[N][0];
@@ -58,6 +44,20 @@ double newton_backward_polynomial(double x, double list_x[], double dd[N + 1][N 
         result += term;
     }
     return result;
+}
+
+void print_divided_differences(double dd[][N + 1])
+{
+    printf("\nDivided_differences:\n");
+
+    for (int i = 0; i <= N; i++)
+    {
+        for (int j = 0; j <= N - i; j++)
+        {
+            printf(" %10.5lf |", dd[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 void print_newton_backward_polynomial(double list_x[], double dd[][N + 1])
@@ -85,27 +85,6 @@ void verify_polynomial(double list_x[], double list_y[], double dd[][N + 1])
     }
 }
 
-void write_newton_backward_polynomial_to_file(const char* filename, double list_x[], double dd[][N + 1]) {
-    FILE* file = fopen(filename, "w");
-    if (file == NULL) {
-        perror("Ошибка открытия файла");
-        return;
-    }
-
-    // Записываем многочлен в файл
-    fprintf(file, "P(x) = %.5f", dd[N][0]);
-    for (int j = 1; j <= N; j++) {
-        fprintf(file, " + (%.5f", dd[N - j][j]);
-        for (int i = 0; i < j; i++) {
-            fprintf(file, " * (x - %.5f)", list_x[N - i]);
-        }
-        fprintf(file, ")");
-    }
-    fprintf(file, "\n");
-
-    fclose(file);
-}
-
 int main(void)
 {
     double x, t;
@@ -128,7 +107,7 @@ int main(void)
     }
 
 
-    printf("nodes_x:\n");
+    printf("Nodes:\n");
     for (int k = 0; k <= N; k++)
     {
         printf("x[%d] = %.6f, y[%d] = %.6f\n", k, list_x[k], k, list_y[k]);
@@ -136,12 +115,10 @@ int main(void)
 
     divided_differences(list_x, list_y, dd);
     print_divided_differences(dd);
-
+   
     print_newton_backward_polynomial(list_x, dd);
 
     verify_polynomial(list_x, list_y, dd);
-
-    write_newton_backward_polynomial_to_file("polynomial.txt", list_x, dd);
 
     return 0;
 }
